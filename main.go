@@ -31,6 +31,7 @@ func main() {
   http.HandleFunc("/", homeHandler)
   http.HandleFunc("/register", registerHandler)
   http.HandleFunc("/login", loginHandler)
+  http.HandleFunc("/logout", logoutHandler)
   http.Handle("/dashboard", authMiddleware(http.HandlerFunc(dashboardHandler)))
   http.ListenAndServe(":8080", nil)
 }
