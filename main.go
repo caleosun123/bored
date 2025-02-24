@@ -48,6 +48,17 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
     email := r.FormValue("email")
     password := r.FormValue("password")
 
+    var existingEmail string
+    err = db.QueryRow("SELECT email FROM users WHERE email = ?", email).Scan(&existingEmail)
+    if err != nil && err != sql.ErrNoRows {
+      http.Error(w, "Unable to query database", http.StatusInternalServerError)
+      return
+    }
+    if existingEmail != "" {
+      http.Error(w, "Email already registered", http.StatusBadRequest)
+      return
+    }
+
     stmt, err := db.Prepare("INSERT INTO users(name, email, password) VALUES(?, ?, ?)")
     if err != nil {
       http.Error(w, "Unable to prepare statement", http.StatusInternalServerError)
