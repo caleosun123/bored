@@ -6,8 +6,8 @@ import (
   "log"
   "net/http"
   "html/template"
+  "golang.org/x/crypto/bcrypt"
   _ "github.com/go-sql-driver/mysql"
-  _ "golang.org/x/crypto/bcrypt"
 )
 
 var db *sql.DB
