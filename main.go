@@ -115,7 +115,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
       Name: "session_token",
       Value: "hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237",
       Expires: time.Now().Add(24 * time.Hour),
-      HttpOnly: true
+      HttpOnly: true,
     })
 
     http.Redirect(w, r, "/dashboard", http.StatusSeeOther)    
