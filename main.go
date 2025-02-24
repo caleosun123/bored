@@ -31,7 +31,7 @@ func main() {
   http.HandleFunc("/", homeHandler)
   http.HandleFunc("/register", registerHandler)
   http.HandleFunc("/login", loginHandler)
-  http.HandleFunc("/dashboard", dashboardHandler)
+  http.Handle("/dashboard", authMiddleware(http.HandlerFunc(dashboardHandler)))
   http.ListenAndServe(":8080", nil)
 }
 
@@ -129,4 +129,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     tmpl := template.Must(template.ParseFiles("static/login.html"))
     tmpl.Execute(w, nil)
   }
+}
+
+func authMiddleware(next http.Handler) http.Handler {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("session_token")
+    if err != nil || cookie.Value != "hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237" {
+      http.Redirect(w, r, "/login", http.StatusSeeOther)
+      return
+    }
+    next.ServeHTTP(w, r)
+  })
 }
