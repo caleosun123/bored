@@ -77,3 +77,33 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
       tmpl.Execute(w, nil)
   }
 }
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+  if r.Method == http.MethodPost {
+    err := r.ParseForm()
+    if err != nil {
+      http.Error(w, "Unable to parse form", http.StatusBadRequest)
+      return
+    }
+
+    email := r.FormValue("email")
+    password := r.FormValue("password")
+
+    var dbPassword string
+    err = db.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&dbPassword)
+    if err != nil {
+      http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+      return
+    }
+
+    if password != dbPassword {
+      http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+      return
+    }
+
+    fmt.Fprintf(w, "User %s logged in successfully", email)
+  } else {
+    tmpl := template.Must(template.ParseFiles("static/login.html"))
+    tmpl.Execute(w, nil)
+  }
+}
