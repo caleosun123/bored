@@ -131,6 +131,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+  http.SetCookie(w, &http.Cookie{
+    Name: "session_token",
+    Value: "",
+    Expires: time.Now().Add(-1 * time.Hour),
+    HttpOnly: true,
+  })
+  http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
 func authMiddleware(next http.Handler) http.Handler {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
     cookie, err := r.Cookie("session_token")
