@@ -4,6 +4,7 @@ import (
   "database/sql"
   "fmt"
   "log"
+  "time"
   "net/http"
   "html/template"
   "golang.org/x/crypto/bcrypt"
@@ -107,9 +108,17 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     err = bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password))
     if err != nil {
       http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+      return
     }
 
-    fmt.Fprintf(w, "User %s logged in successfully", email)
+    http.SetCookie(w, &http.Cookie{
+      Name: "session_token",
+      Value: "hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237hhbk2012740**0237",
+      Expires: time.Now().Add(24 * time.Hour),
+      HttpOnly: true
+    })
+
+    http.Redirect(w, r, "/dashboard", http.StatusSeeOther)    
   } else {
     tmpl := template.Must(template.ParseFiles("static/login.html"))
     tmpl.Execute(w, nil)
