@@ -28,14 +28,19 @@ func main() {
   }
   fmt.Println("Successfully connected to the database")
   
-  http.HandleFunc("/", helloHandler)
+  http.HandleFunc("/", homeHandler)
   http.HandleFunc("/register", registerHandler)
   http.HandleFunc("/login", loginHandler)
   http.ListenAndServe(":8080", nil)
 }
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
   tmpl := template.Must(template.ParseFiles("static/index.html"))
+  tmpl.Execute(w, nil)
+}
+
+func dashboardHandler(w http.ResponseWriter, r *http.Request) {
+  tmpl := template.Must(template.ParseFiles("static/dashboard.html"))
   tmpl.Execute(w, nil)
 }
 
