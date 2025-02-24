@@ -12,6 +12,6 @@ func main() {
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-  tmpl := template.Must(template.ParseFiles(static/index.html))
-  template.Execute(tmpl)
+  tmpl := template.Must(template.ParseFiles("static/index.html"))
+  template.Execute(w, nil)
 }
