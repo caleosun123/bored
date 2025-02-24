@@ -27,10 +27,16 @@ func main() {
   fmt.Println("Successfully connected to the database")
   
   http.HandleFunc("/", helloHandler)
+  http.HandleFunc("/register", registerHandler)
   http.ListenAndServe(":8080", nil)
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
   tmpl := template.Must(template.ParseFiles("static/index.html"))
+  tmpl.Execute(w, nil)
+}
+
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+  tmpl := template.Must(template.ParseFiles("static/register.html"))
   tmpl.Execute(w, nil)
 }
