@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "net/http"
+  "html/template"
 )
 
 func main() {
@@ -11,5 +12,6 @@ func main() {
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello, world!")
+  tmpl := template.Must(template.ParseFiles(static/index.html))
+  template.Execute(tmpl)
 }
