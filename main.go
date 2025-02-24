@@ -37,6 +37,32 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-  tmpl := template.Must(template.ParseFiles("static/register.html"))
-  tmpl.Execute(w, nil)
+  if r.Method == http.MethodPost {
+    err := r.ParseForm()
+    if err != nil {
+      http.Error(w, "Unable to parse form: ", http.StatusBadRequest)
+      return
+    }
+
+    name := r.FormValue("name")
+    email := r.FormValue("email")
+    password := r.FormValue("password")
+
+    stmt, err := db.Prepare("INSERT INTO users(name, email, password) VALUES(?, ?, ?)")
+    if err != nil {
+      http.Error(w, "Unable to prepare statement," http.StatusInternalServerError)
+      return
+    }
+    defer stmt.Close()
+
+    _, err = stmt.Exec(name, email, password)
+    if err != nil {
+      http.Error(w, "Unable to execute statement", http.StatusInternalServerError)
+      return
+    }
+    fmt.Fprintf(w, "User %s registered successfully!", name)
+  } else {
+      tmpl := template.Must(template.ParseFiles("static/register.html"))
+      tmpl.Execute(w, nil)
+  }
 }
