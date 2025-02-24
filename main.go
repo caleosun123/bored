@@ -7,6 +7,7 @@ import (
   "net/http"
   "html/template"
   _ "github.com/go-sql-driver/mysql"
+  _ "golang.org/x/crypto/bcrypt"
 )
 
 var db *sql.DB
@@ -55,9 +56,15 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
       http.Error(w, "Unable to query database", http.StatusInternalServerError)
       return
     }
+    
     if existingEmail != "" {
       http.Error(w, "Email already registered", http.StatusBadRequest)
       return
+    }
+
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+      http.Error(w, "Unable to hash password", http.StatusInternalServerError)
     }
 
     stmt, err := db.Prepare("INSERT INTO users(name, email, password) VALUES(?, ?, ?)")
@@ -67,7 +74,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
     }
     defer stmt.Close()
 
-    _, err = stmt.Exec(name, email, password)
+    _, err = stmt.Exec(name, email, hashedPassword)
     if err != nil {
       http.Error(w, "Unable to execute statement", http.StatusInternalServerError)
       return
@@ -97,9 +104,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
       return
     }
 
-    if password != dbPassword {
+    err = bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password))
+    if err != nil {
       http.Error(w, "Invalid email or password", http.StatusUnauthorized)
-      return
     }
 
     fmt.Fprintf(w, "User %s logged in successfully", email)
