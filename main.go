@@ -40,7 +40,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
   if r.Method == http.MethodPost {
     err := r.ParseForm()
     if err != nil {
-      http.Error(w, "Unable to parse form: ", http.StatusBadRequest)
+      http.Error(w, "Unable to parse form", http.StatusBadRequest)
       return
     }
 
@@ -50,7 +50,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
     stmt, err := db.Prepare("INSERT INTO users(name, email, password) VALUES(?, ?, ?)")
     if err != nil {
-      http.Error(w, "Unable to prepare statement," http.StatusInternalServerError)
+      http.Error(w, "Unable to prepare statement", http.StatusInternalServerError)
       return
     }
     defer stmt.Close()
